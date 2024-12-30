@@ -29,20 +29,23 @@ export const Comments: React.FC = () => {
 
       const { data } = event;
       if (data && typeof data === 'object') {
+        const message = data as GiscusMessage;
+        
         // 处理不同类型的消息
         switch (data.giscus?.discussion) {
           case 'discussion:loaded':
             console.log('评论已加载');
             break;
-          case 'comment:created':
+          case 'comment:created': {
             console.log('新评论已创建');
-            const comment = (data as GiscusMessage).giscus.comment;
+            const { author, content, createdAt } = message.giscus.comment;
             console.log('评论详情:', {
-              author: comment.author.name,
-              content: comment.content,
-              createdAt: comment.createdAt
+              author: author.name,
+              content,
+              createdAt
             });
             break;
+          }
           case 'comment:replied':
             console.log('评论已回复');
             break;
@@ -62,7 +65,7 @@ export const Comments: React.FC = () => {
     script.setAttribute('data-mapping', 'pathname');
     script.setAttribute('data-strict', '0');
     script.setAttribute('data-reactions-enabled', '1');
-    script.setAttribute('data-emit-metadata', '1'); // 启用元数据发送
+    script.setAttribute('data-emit-metadata', '1');
     script.setAttribute('data-input-position', 'top');
     script.setAttribute('data-theme', 'light');
     script.setAttribute('data-lang', 'zh-CN');

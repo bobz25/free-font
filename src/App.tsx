@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { FontData, UpdateLog, fonts, updateLogs } from './data/fonts'
+import { fonts, updateLogs } from './data/fonts'
 import { Comments } from './components/Comments'
 import './App.css'
 
