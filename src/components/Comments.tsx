@@ -30,7 +30,7 @@ export const Comments: React.FC = () => {
       const { data } = event;
       if (data && typeof data === 'object') {
         const message = data as GiscusMessage;
-        
+
         // 处理不同类型的消息
         switch (data.giscus?.discussion) {
           case 'discussion:loaded':
@@ -60,7 +60,7 @@ export const Comments: React.FC = () => {
     script.src = 'https://giscus.app/client.js';
     script.setAttribute('data-repo', 'bobz25/free-font');
     script.setAttribute('data-repo-id', 'R_kgDONjgmEA');
-    script.setAttribute('data-category', 'Comments');
+    script.setAttribute('data-category', 'General');
     script.setAttribute('data-category-id', 'DIC_kwDONjgmEM4ClltN');
     script.setAttribute('data-mapping', 'pathname');
     script.setAttribute('data-strict', '0');
