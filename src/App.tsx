@@ -78,17 +78,13 @@ function App() {
 
     let newCategories: string[];
     if (selectedCategories.includes(category)) {
-      // 如果已选中，则移除
       newCategories = selectedCategories.filter(c => c !== category);
       if (newCategories.length === 0) {
-        // 如果没有选中任何分类，则默认选中"全部"
         newCategories = ["全部"];
       } else {
-        // 移除"全部"选项
         newCategories = newCategories.filter(c => c !== "全部");
       }
     } else {
-      // 如果未选中，则添加
       newCategories = [...selectedCategories.filter(c => c !== "全部"), category];
     }
     setSelectedCategories(newCategories);
@@ -99,40 +95,44 @@ function App() {
     if (selectedCategories.includes("全部")) {
       return fonts;
     }
-    return fonts.filter(font => 
+    return fonts.filter(font =>
       font.category.some(cat => selectedCategories.includes(cat))
     );
   }, [selectedCategories]);
 
   return (
-    <div className="container">
-      <header>
-        <h1>免费商用字体</h1>
-        <p>精选优质免费商用字体，助力设计创作</p>
-      </header>
-      
-      <div className="categories-tabs">
-        {categories.map(category => (
-          <button
-            key={category}
-            className={`category-tab ${selectedCategories.includes(category) ? 'active' : ''}`}
-            onClick={() => handleCategoryClick(category)}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
+    <div className="app">
+      <div className="container">
+        <header>
+          <h1>免费商用字体</h1>
+          <p>精选优质免费商用字体，让设计更有格调</p>
+        </header>
 
-      <div className="fonts-grid">
-        {filteredFonts.map((font, index) => (
-          <FontCard key={index} font={font} />
-        ))}
-      </div>
+        <main>
+          <div className="categories-tabs">
+            {categories.map((category) => (
+              <button
+                key={category}
+                className={`category-tab ${selectedCategories.includes(category) ? 'active' : ''}`}
+                onClick={() => handleCategoryClick(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
 
-      <footer>
-        <UpdateLogs logs={updateLogs} />
-        <Comments />
-      </footer>
+          <div className="fonts-grid">
+            {filteredFonts.map((font, index) => (
+              <FontCard key={index} font={font} />
+            ))}
+          </div>
+        </main>
+
+        <footer>
+          <UpdateLogs logs={updateLogs} />
+          <Comments />
+        </footer>
+      </div>
     </div>
   )
 }

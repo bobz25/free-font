@@ -1,17 +1,68 @@
 import { useEffect } from 'react';
 
+interface GiscusMessage {
+  giscus: {
+    discussion: {
+      id: string;
+      url: string;
+      totalComments: number;
+      totalReplies: number;
+    };
+    comment: {
+      id: string;
+      url: string;
+      author: {
+        name: string;
+        avatar: string;
+      };
+      content: string;
+      createdAt: string;
+    };
+  };
+}
+
 export const Comments: React.FC = () => {
   useEffect(() => {
+    // 添加消息监听器
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== 'https://giscus.app') return;
+
+      const { data } = event;
+      if (data && typeof data === 'object') {
+        // 处理不同类型的消息
+        switch (data.giscus?.discussion) {
+          case 'discussion:loaded':
+            console.log('评论已加载');
+            break;
+          case 'comment:created':
+            console.log('新评论已创建');
+            const comment = (data as GiscusMessage).giscus.comment;
+            console.log('评论详情:', {
+              author: comment.author.name,
+              content: comment.content,
+              createdAt: comment.createdAt
+            });
+            break;
+          case 'comment:replied':
+            console.log('评论已回复');
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // 初始化 giscus
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
-    script.setAttribute('data-repo', 'bobz25/free-font');  // 替换为你的 GitHub 仓库
-    script.setAttribute('data-repo-id', ''); // 需要替换为你的仓库 ID
+    script.setAttribute('data-repo', 'bobz25/free-font');
+    script.setAttribute('data-repo-id', 'R_kgDONjgmEA');
     script.setAttribute('data-category', 'Comments');
-    script.setAttribute('data-category-id', ''); // 需要替换为你的分类 ID
+    script.setAttribute('data-category-id', 'DIC_kwDONjgmEM4ClltN');
     script.setAttribute('data-mapping', 'pathname');
     script.setAttribute('data-strict', '0');
     script.setAttribute('data-reactions-enabled', '1');
-    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-emit-metadata', '1'); // 启用元数据发送
     script.setAttribute('data-input-position', 'top');
     script.setAttribute('data-theme', 'light');
     script.setAttribute('data-lang', 'zh-CN');
@@ -24,6 +75,7 @@ export const Comments: React.FC = () => {
     }
 
     return () => {
+      window.removeEventListener('message', handleMessage);
       const comments = document.getElementById('comments');
       if (comments) {
         comments.innerHTML = '';
