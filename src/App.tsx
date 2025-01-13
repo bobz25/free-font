@@ -1,36 +1,46 @@
 import { useState, useMemo } from 'react'
-import { fonts, updateLogs } from './data/fonts'
+import { FontData, fonts, UpdateLog, updateLogs } from './data/fonts'
 import { Comments } from './components/Comments'
-import './App.css'
-
-interface FontData {
-  name: string;
-  description: string;
-  downloadUrl: string;
-  previewImage: string;
-  category: string[];
-}
-
-interface UpdateLog {
-  date: string;
-  changes: string[];
-}
 
 const FontCard: React.FC<{ font: FontData }> = ({ font }) => {
   return (
-    <div className="font-card">
-      <img src={font.previewImage} alt={font.name} className="font-preview" />
-      <div className="font-info">
-        <h3>{font.name}</h3>
-        <p>{font.description}</p>
-        <div className="font-categories">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-transform hover:-translate-y-1 flex flex-col h-full">
+      <div className="w-full h-48 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden">
+        {font.previewImage ? (
+          <img src={font.previewImage} alt={font.name} className="w-full h-full object-cover" />
+        ) : (
+          <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-200 text-center p-8 ">{font.name}</h3>
+        )}
+      </div>
+      <div className="p-6 flex-grow flex flex-col">
+        <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">{font.description}</p>
+        <div className="flex flex-wrap gap-2 mb-4">
           {font.category.map((cat, index) => (
-            <span key={index} className="category-tag">{cat}</span>
+            <span key={index} className="px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+              {cat}
+            </span>
           ))}
         </div>
-        <a href={font.downloadUrl} target="_blank" rel="noopener noreferrer" className="download-btn">
-          下载字体
-        </a>
+        <div className="flex gap-4">
+          <a
+            href={font.downloadUrl.official}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md text-center transition-colors"
+          >
+            官方下载
+          </a>
+          {font.downloadUrl.lanzhouCloud && (
+            <a
+              href={font.downloadUrl.lanzhouCloud}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md text-center transition-colors"
+            >
+              蓝奏云下载
+            </a>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -38,15 +48,15 @@ const FontCard: React.FC<{ font: FontData }> = ({ font }) => {
 
 const UpdateLogs: React.FC<{ logs: UpdateLog[] }> = ({ logs }) => {
   return (
-    <div className="update-logs">
-      <h2>更新日志</h2>
-      <div className="logs-container">
+    <div className="max-w-3xl mx-auto px-4 pb-8 w-full">
+      <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200 mb-8">更新日志</h2>
+      <div className="space-y-8">
         {logs.map((log, index) => (
-          <div key={index} className="log-item">
-            <div className="log-date">{log.date}</div>
-            <ul className="log-changes">
+          <div key={index} className="relative pl-8 border-l-2 border-blue-500">
+            <div className="font-semibold text-blue-500 mb-2 text-lg">{log.date}</div>
+            <ul className="space-y-2">
               {log.changes.map((change, changeIndex) => (
-                <li key={changeIndex}>{change}</li>
+                <li key={changeIndex} className="text-gray-600 dark:text-gray-300">{change}</li>
               ))}
             </ul>
           </div>
@@ -59,7 +69,6 @@ const UpdateLogs: React.FC<{ logs: UpdateLog[] }> = ({ logs }) => {
 function App() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["全部"]);
 
-  // 获取所有唯一的分类
   const categories = useMemo(() => {
     const allCategories = new Set<string>();
     allCategories.add("全部");
@@ -69,7 +78,6 @@ function App() {
     return Array.from(allCategories);
   }, []);
 
-  // 处理分类选择
   const handleCategoryClick = (category: string) => {
     if (category === "全部") {
       setSelectedCategories(["全部"]);
@@ -90,7 +98,6 @@ function App() {
     setSelectedCategories(newCategories);
   };
 
-  // 根据选中的分类筛选字体
   const filteredFonts = useMemo(() => {
     if (selectedCategories.includes("全部")) {
       return fonts;
@@ -101,19 +108,23 @@ function App() {
   }, [selectedCategories]);
 
   return (
-    <div className="app">
-      <div className="container">
-        <header>
-          <h1>免费商用字体</h1>
-          <p>精选优质免费商用字体，让设计更有格调</p>
+    <div className="min-h-screen w-full flex justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="w-full">
+        <header className="text-center py-12 px-4">
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">免费商用字体</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">精选优质免费商用字体，让设计更有格调</p>
         </header>
 
-        <main>
-          <div className="categories-tabs">
+        <main className="max-w-[2000px] mx-auto px-4">
+          <div className="flex flex-wrap gap-2 justify-center mb-8">
             {categories.map((category) => (
               <button
                 key={category}
-                className={`category-tab ${selectedCategories.includes(category) ? 'active' : ''}`}
+                className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                  selectedCategories.includes(category)
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
                 onClick={() => handleCategoryClick(category)}
               >
                 {category}
@@ -121,14 +132,16 @@ function App() {
             ))}
           </div>
 
-          <div className="fonts-grid">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] max-w-[2000px] gap-6 justify-items-center">
             {filteredFonts.map((font, index) => (
-              <FontCard key={index} font={font} />
+              <div key={index} className="w-full max-w-[320px]">
+                <FontCard font={font} />
+              </div>
             ))}
           </div>
         </main>
 
-        <footer>
+        <footer className="mt-16 border-t border-gray-200 dark:border-gray-800">
           <UpdateLogs logs={updateLogs} />
           <Comments />
         </footer>
